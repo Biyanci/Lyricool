@@ -79,15 +79,35 @@ class LrcCaption {
   static Future<LrcCaption> fromLrcFile({required File lrc}) async {
     var lrcRawText = await lrc.readAsString();
     var lrcLines = lrcRawText.split("\n");
-    var lrcCaption = LrcCaption(
-      lines: [
-        for (int i = 0; i < lrcLines.length - 1; i++)
-          LrcCaptionLine.fromLrcLine(lrcLine: lrcLines[i])
-      ],
-      projectName: lrc.path.substring(
+
+    String name = "";
+    if (Platform.isWindows) {
+      name = lrc.path.substring(
         lrc.path.lastIndexOf("\\") + 1,
         lrc.path.lastIndexOf("."),
-      ),
+      );
+    } else if (Platform.isAndroid) {
+      name = lrc.path.substring(
+        lrc.path.lastIndexOf("/") + 1,
+        lrc.path.lastIndexOf("."),
+      );
+    } else {
+      name = lrc.path;
+    }
+
+    var lines = <LrcCaptionLine>[];
+    for (int i = 0; i < lrcLines.length; i++) {
+      var fromLrc = LrcCaptionLine.fromLrcLine(lrcLine: lrcLines[i]);
+      if (fromLrc == null) {
+        continue;
+      } else {
+        lines.add(fromLrc);
+      }
+    }
+
+    var lrcCaption = LrcCaption(
+      lines: lines,
+      projectName: name,
     );
 
     ///sort by second
@@ -202,16 +222,24 @@ class LrcCaptionLine {
         );
   }
 
-  static LrcCaptionLine fromLrcLine({required String lrcLine}) {
+  static LrcCaptionLine? fromLrcLine({required String lrcLine}) {
+    if (lrcLine.trim().isEmpty) {
+      return null;
+    }
     var lrcTimeString = lrcLine.substring(
       lrcLine.indexOf("[") + 1,
       lrcLine.indexOf("]"),
     );
     var content = lrcLine.substring(lrcLine.indexOf("]") + 1);
-    var minute = int.parse(lrcTimeString.split(":")[0]);
-    var second = double.parse(lrcTimeString.split(":")[1]);
+    var minute = int.tryParse(lrcTimeString.split(":")[0]);
+    var second = double.tryParse(lrcTimeString.split(":")[1]);
 
+    if (minute == null || second == null) {
+      return null;
+    }
+    
     var inMilliseconds = ((minute * 60 + second) * 1000).toInt();
+
     return LrcCaptionLine(
       time: Duration(milliseconds: inMilliseconds),
       content: content,
