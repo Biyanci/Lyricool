@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:caption_tool/model/caption.dart';
 import 'package:caption_tool/page/preview_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'delete_view.dart';
@@ -191,7 +192,7 @@ class _CaptionEditingPageState extends State<CaptionEditingPage> {
         itemBuilder: captionLineBuilder,
       ),
       bottomNavigationBar: BottomAppBar(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 2.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
         child: Row(
           children: [
             addCaptionLineBtn,
@@ -208,7 +209,12 @@ class _CaptionEditingPageState extends State<CaptionEditingPage> {
     );
   }
 
-  Future<String> get getLrcFileDir async => "${(await getExternalStorageDirectory())!.path}${Platform.pathSeparator}lyrics${Platform.pathSeparator}${widget.caption.projectName}.lrc";
+  Future<String> get getLrcFileDir async {
+    if (Platform.isAndroid) {
+      return "${(await getExternalStorageDirectory())!.path}${Platform.pathSeparator}lyrics${Platform.pathSeparator}${widget.caption.projectName}.lrc";
+    }
+    return "${(await getApplicationDocumentsDirectory()).path}${Platform.pathSeparator}lyrics${Platform.pathSeparator}${widget.caption.projectName}.lrc";
+  }
 
   Widget? captionLineBuilder(context, index) {
     return InkWell(
@@ -296,11 +302,13 @@ class MergeLyricDialog extends StatelessWidget {
         const Text("示例："),
         Row(
           children: [
-            const Column(
-              children: [
-                Text("[01:56.32]line1"),
-                Text("[01:56.32]line2"),
-              ],
+            const Expanded(
+              child: Column(
+                children: [
+                  Text("[01:56.32]line1"),
+                  Text("[01:56.32]line2"),
+                ],
+              ),
             ),
             const SizedBox(
               width: 8.0,
@@ -311,12 +319,14 @@ class MergeLyricDialog extends StatelessWidget {
             const SizedBox(
               width: 8.0,
             ),
-            Center(
-              child: ValueListenableBuilder(
-                valueListenable: separatorNotifier,
-                builder: (context, value, child) {
-                  return Text("[01:56.32]line1${value}line2");
-                },
+            Expanded(
+              child: Center(
+                child: ValueListenableBuilder(
+                  valueListenable: separatorNotifier,
+                  builder: (context, value, child) {
+                    return Text("[01:56.32]line1${value}line2");
+                  },
+                ),
               ),
             ),
           ],
@@ -374,12 +384,14 @@ class SplitLyricDialog extends StatelessWidget {
         const Text("示例："),
         Row(
           children: [
-            Center(
-              child: ValueListenableBuilder(
-                valueListenable: separatorNotifier,
-                builder: (context, value, child) {
-                  return Text("[01:56.32]line1${value}line2");
-                },
+            Expanded(
+              child: Center(
+                child: ValueListenableBuilder(
+                  valueListenable: separatorNotifier,
+                  builder: (context, value, child) {
+                    return Text("[01:56.32]line1${value}line2");
+                  },
+                ),
               ),
             ),
             const SizedBox(
@@ -391,11 +403,13 @@ class SplitLyricDialog extends StatelessWidget {
             const SizedBox(
               width: 8.0,
             ),
-            const Column(
-              children: [
-                Text("[01:56.32]line1"),
-                Text("[01:56.32]line2"),
-              ],
+            const Expanded(
+              child: Column(
+                children: [
+                  Text("[01:56.32]line1"),
+                  Text("[01:56.32]line2"),
+                ],
+              ),
             ),
           ],
         ),
@@ -458,24 +472,30 @@ class EditCaptionLineDialog extends StatelessWidget {
         TextEditingController(text: captionLine.content);
 
     var minTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 2,
       controller: minEditingController,
       decoration: const InputDecoration(
         labelText: "min",
+        suffixText: "min"
       ),
     );
     var secTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 2,
       controller: secEditingController,
       decoration: const InputDecoration(
         labelText: "s",
+        suffixText: "s"
       ),
     );
     var msTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 3,
       controller: msEditingController,
       decoration: const InputDecoration(
         labelText: "ms",
+        suffixText: "ms"
       ),
     );
     var contentTextField = TextField(
@@ -544,24 +564,30 @@ class AddCaptionLineDialog extends StatelessWidget {
     final posEditingController = TextEditingController();
 
     var minTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 2,
       controller: minEditingController,
       decoration: const InputDecoration(
         labelText: "min",
+        suffixText: "min"
       ),
     );
     var secTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 2,
       controller: secEditingController,
       decoration: const InputDecoration(
         labelText: "s",
+        suffixText: "s"
       ),
     );
     var msTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 3,
       controller: msEditingController,
       decoration: const InputDecoration(
         labelText: "ms",
+        suffixText: "ms"
       ),
     );
     var contentTextField = TextField(
@@ -571,6 +597,7 @@ class AddCaptionLineDialog extends StatelessWidget {
       ),
     );
     var posTextField = TextField(
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: posEditingController,
       decoration: const InputDecoration(
         labelText: "添加到",

@@ -4,6 +4,7 @@ import 'package:caption_tool/color_schemes.g.dart';
 import 'package:caption_tool/model/caption.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 
 class PreviewView extends StatefulWidget {
   const PreviewView(
@@ -19,7 +20,7 @@ class PreviewView extends StatefulWidget {
 class _PreviewViewState extends State<PreviewView> {
   var scrollController = ScrollController();
 
-  double actionBarHeight = 192.0;
+  double actionBarHeight = 212.0;
 
   List<double> listTileHeight = [];
 
@@ -35,6 +36,8 @@ class _PreviewViewState extends State<PreviewView> {
   var isPlay = ValueNotifier(false);
   var canReplay = ValueNotifier(false);
   var useDelay = true;
+  var isDelaying = false;
+  var delayDuration = const Duration(seconds: 3);
 
   Ticker ticker = Ticker((elapsed) {});
 
@@ -120,7 +123,8 @@ class _PreviewViewState extends State<PreviewView> {
                   isPlay.value = false;
                 }
               : () async {
-                  if (useDelay == true) {
+                  if (isDelaying) {
+                  } else if (useDelay == true) {
                     ticker = Ticker(
                       (elapsed) {
                         currentDuration.value += elapsed - lastElapsed;
@@ -144,13 +148,15 @@ class _PreviewViewState extends State<PreviewView> {
                         }
                       },
                     );
-                    currentDuration.value = const Duration(seconds: 3);
+                    currentDuration.value = delayDuration;
+                    isDelaying = true;
                     Timer.periodic(
                       const Duration(seconds: 1),
                       (timer) {
                         currentDuration.value -= const Duration(seconds: 1);
                         if (currentDuration.value == Duration.zero) {
                           ticker.start();
+                          isDelaying = false;
                           isPlay.value = true;
                           canReplay.value = true;
                           useDelay = false;
@@ -169,6 +175,114 @@ class _PreviewViewState extends State<PreviewView> {
       },
     );
 
+    var lyricView = ValueListenableBuilder(
+      valueListenable: index,
+      builder: (context, value, child) {
+        return SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: [
+              SizedBox(height: listViewHeight / 2),
+              for (int i = 0; i < widget.source.lines.length; i++)
+                ListTile(
+                  key: widget.globalKeys[i],
+                  leading: Text(
+                    "$i",
+                    style: TextStyle(
+                      color: (i + 1 == index.value)
+                          ? lightColorScheme.primary
+                          : Colors.grey,
+                    ),
+                  ),
+                  title: Center(
+                    child: Text(
+                      widget.source.lines[i].content,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: (i + 1 == index.value)
+                            ? lightColorScheme.primary
+                            : Colors.grey,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  trailing: Text(
+                    widget.source.lines[i].toFormattedTime(),
+                    style: TextStyle(
+                      color: (i + 1 == index.value)
+                          ? lightColorScheme.primary
+                          : Colors.grey,
+                    ),
+                  ),
+                ),
+              SizedBox(
+                height: listViewHeight / 2,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    var setDelayBtn = ElevatedButton.icon(
+      onPressed: () async {
+        String newDelayStr = await showDialog(
+          context: context,
+          builder: (context) {
+            var delayEditingController =
+                TextEditingController(text: delayDuration.inSeconds.toString());
+            return SimpleDialog(
+              contentPadding: const EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
+              title: const Text("延时"),
+              children: [
+                const Text("开始预览的延时，默认3s"),
+                const SizedBox(height: 16.0),
+                TextField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: delayEditingController,
+                  decoration: const InputDecoration(
+                    labelText: "延时",
+                    suffixText: "s",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("取消"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop<String>(
+                          context,
+                          delayEditingController.text,
+                        );
+                      },
+                      child: const Text("确认"),
+                    ),
+                  ],
+                )
+              ],
+            );
+          },
+        );
+
+        var newDelayInseconds = int.tryParse(newDelayStr);
+        if (newDelayInseconds != null) {
+          delayDuration = Duration(seconds: newDelayInseconds);
+
+          setState(() {});
+        }
+      },
+      label: Text("+ ${delayDuration.inSeconds}s"),
+      icon: const Icon(Icons.more_time),
+    );
+    
     return WillPopScope(
       onWillPop: () {
         ticker.dispose();
@@ -181,55 +295,7 @@ class _PreviewViewState extends State<PreviewView> {
           children: [
             SizedBox(
               height: listViewHeight,
-              child: ValueListenableBuilder(
-                valueListenable: index,
-                builder: (context, value, child) {
-                  return SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      children: [
-                        SizedBox(height: listViewHeight / 2),
-                        for (int i = 0; i < widget.source.lines.length; i++)
-                          ListTile(
-                            key: widget.globalKeys[i],
-                            leading: Text(
-                              "$i",
-                              style: TextStyle(
-                                color: (i + 1 == index.value)
-                                    ? lightColorScheme.primary
-                                    : Colors.grey,
-                              ),
-                            ),
-                            title: Center(
-                              child: Text(
-                                widget.source.lines[i].content,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: (i + 1 == index.value)
-                                      ? lightColorScheme.primary
-                                      : Colors.grey,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            trailing: Text(
-                              widget.source.lines[i].toFormattedTime(),
-                              style: TextStyle(
-                                color: (i + 1 == index.value)
-                                    ? lightColorScheme.primary
-                                    : Colors.grey,
-                              ),
-                            ),
-                          ),
-                        SizedBox(
-                          height: listViewHeight / 2,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              child: lyricView,
             ),
             SizedBox(
               height: actionBarHeight,
@@ -237,7 +303,15 @@ class _PreviewViewState extends State<PreviewView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  tickerStr,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 112.0),
+                      tickerStr,
+                      const SizedBox(width: 8.0),
+                      setDelayBtn,
+                    ],
+                  ),
                   const SizedBox(height: 16.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -247,6 +321,7 @@ class _PreviewViewState extends State<PreviewView> {
                       playORpauseBtn
                     ],
                   ),
+                  const SizedBox(height: 36.0)
                 ],
               ),
             )
