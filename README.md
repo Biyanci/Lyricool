@@ -63,7 +63,7 @@
 6. 打轴（给每行歌词设置时间轴，打轴后不进行排序）
 7. 合并相同时间戳的歌词行（进行排序以加快合并速度）
 8. 拆分歌词行
-9. 排序（所有时间戳相同时不排序，使用Binary Insertion Sort不改变时间戳相同的几句歌词的相对位置，即保证稳定性）
+9. 排序（所有时间戳相同时不排序。使用Binary Insertion Sort，不改变时间戳相同的几句歌词的相对位置，即保证稳定性）
 10. 保存文件（输出目录：用户Document目录<img width="117" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/d2263a98-9c9b-4aa1-997b-a7c54001bae1">）
 
 ## 预览界面
