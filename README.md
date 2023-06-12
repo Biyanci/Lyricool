@@ -52,7 +52,7 @@
 
 ## 编辑界面
 
-<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/b0501fcc-4f2e-470b-930c-116a514cfa5e">
+<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/0cec7494-cc6a-4a22-a25e-e50709485746">
 
 包含以下功能：
 1. 重命名歌词文件名
@@ -64,7 +64,8 @@
 7. 合并相同时间戳的歌词行（进行排序以加快合并速度）
 8. 拆分歌词行
 9. 排序（所有时间戳相同时不排序。使用Binary Insertion Sort，不改变时间戳相同的几句歌词的相对位置，即保证稳定性）
-10. 保存文件（输出目录：用户Document目录<img width="117" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/d2263a98-9c9b-4aa1-997b-a7c54001bae1">）
+10. 调整时间轴。将所有歌词的时间轴提前或延后指定的一段时间（time + delay），不排序。若time + delay<0，则令 time = 0
+11. 保存文件（输出目录：用户Document目录<img width="117" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/d2263a98-9c9b-4aa1-997b-a7c54001bae1">）
 
 ## 预览界面
 
