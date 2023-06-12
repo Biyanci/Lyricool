@@ -52,17 +52,19 @@
 
 ## 编辑界面
 
-<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/1e4c385b-ad66-4089-bdd7-47062fdb132d">
+<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/b0501fcc-4f2e-470b-930c-116a514cfa5e">
 
 包含以下功能：
 1. 重命名歌词文件名
-2. 添加歌词行
-3. 选择歌词行删除
-4. 预览歌词
-5. 打轴（给每行歌词设置时间轴）
-6. 合并相同时间戳的歌词行
-7. 拆分歌词行
-8. 保存到.lrc文件
+2. 修改歌词行（修改时间戳、内容。修改后不进行排序）
+3. 添加歌词行（默认添加到末尾，给定位置时插入到指定位置。插入后不进行排序）
+4. 选择歌词行删除（删除后不进行排序）
+5. 预览歌词
+6. 打轴（给每行歌词设置时间轴，打轴后不进行排序）
+7. 合并相同时间戳的歌词行（进行排序以加快合并速度）
+8. 拆分歌词行
+9. 排序（所有时间戳相同时不排序，使用Binary Insertion Sort不改变时间戳相同的几句歌词的相对位置，即保证稳定性）
+10. 保存文件（输出目录：用户Document目录<img width="117" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/d2263a98-9c9b-4aa1-997b-a7c54001bae1">）
 
 ## 预览界面
 
