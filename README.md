@@ -71,13 +71,13 @@
 
 ## 预览界面
 
-<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/81968d9b-866a-4f74-937e-7dab1229ee53">
+<img width="444" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/eda87ce8-91aa-467a-ac5f-5d266413f43d">
 
 点击播放按钮后，延时3s（默认值，可自定义）开始预览歌词
 
-同时高亮显示时间戳相同的歌词并滚动到该行歌词（可能不会居中）
+高亮显示时间戳相同的歌词并让这些歌词滚动到中间
 
-<img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/627d4227-a985-40ce-84e4-55a07d4ddeef">
+<img width="444" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/87e3d9ab-b27c-4892-a5fe-525435bddc22">
 
 预览时，可以暂停或重新预览歌词
 
@@ -93,7 +93,7 @@
 
 <img width="396" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/c513dbb3-b112-4d9e-b987-6c03b5d9038d">
 
-点击开始按钮后，高亮显示要修改时间轴的歌词，点击按钮<img width="58" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/56169934-59bc-4c94-aa62-69b0ad1be0d1">，将当前时间戳赋给高亮显示的歌词
+点击开始按钮后，高亮显示要修改时间轴的歌词，点击按钮<img width="58" alt="image" src="https://github.com/Biyanci/Lyricool/assets/98510207/56169934-59bc-4c94-aa62-69b0ad1be0d1">，将当前时间戳赋给居中的高亮显示的歌词
 
 打轴时，可以暂停或重新开始
 
